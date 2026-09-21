@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azuline Roofing Solutions | Owner Portal</title>
+<link rel="icon" type="image/jpeg" href="logo.jpg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <img src="logo.jpg" alt="Azuline Roofing Solutions logo">
+    </a>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="container">
+    <h1>Owner Portal</h1>
+  </div>
+</div>
+
+<main class="owner-portal-page">
+
+  <section id="login-section" class="owner-section">
+    <h3 style="color:var(--navy);margin-bottom:14px">Sign In</h3>
+    <label for="login-email">Email</label>
+    <input type="email" id="login-email" placeholder="you@example.com">
+    <label for="login-password">Password</label>
+    <input type="password" id="login-password" placeholder="Password">
+    <button id="login-btn" class="btn" style="margin-top:16px">Sign In</button>
+    <p id="login-message" class="slot-message"></p>
+  </section>
+
+  <div id="dashboard-section" class="hidden">
+
+    <div class="portal-header">
+      <p id="signed-in-as" style="color:var(--muted);font-size:13px"></p>
+      <button id="sign-out-btn" class="secondary-btn">Sign Out</button>
+    </div>
+
+    <section class="owner-section">
+      <h3 style="color:var(--navy);margin-bottom:14px">Quote Requests</h3>
+      <div id="quotes-list"></div>
+    </section>
+
+    <section class="owner-section">
+      <h3 style="color:var(--navy);margin-bottom:14px">Block Out Availability</h3>
+      <p style="color:var(--muted);font-size:13px">Mark a date range as booked — this shows on the public Availability page.</p>
+      <label for="busy-start">Start date</label>
+      <input type="date" id="busy-start">
+      <label for="busy-end">End date</label>
+      <input type="date" id="busy-end">
+      <label for="busy-reason">Reason (optional, shown publicly)</label>
+      <input type="text" id="busy-reason" placeholder="e.g. Full roof job in progress">
+      <button id="busy-btn" class="btn" style="margin-top:16px">Block This Period</button>
+      <p id="busy-message" class="slot-message"></p>
+    </section>
+
+    <section class="owner-section">
+      <h3 style="color:var(--navy);margin-bottom:14px">Currently Blocked</h3>
+      <div id="blocked-list"></div>
+    </section>
+
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="owner.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azuline Roofing Solutions | Request a Quote</title>
+<link rel="icon" type="image/jpeg" href="logo.jpg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <img src="logo.jpg" alt="Azuline Roofing Solutions logo">
+    </a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Our Services</a>
+      <a href="testimonials.html">Testimonials</a>
+      <a href="quote.html" class="active">Request a Quote</a>
+      <a href="availability.html">Availability</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="quote">
+  <div class="container quote-grid">
+    <div>
+      <div class="eyebrow">Request A Quote</div>
+      <h2>Let's Talk About <span>Your Roof</span></h2>
+      <p style="color:#dce4e9;margin-top:15px">Fill in the form and we'll get back to you to discuss the project. You'll get an email confirming we've received your enquiry.</p>
+      <div style="margin-top:30px">
+        <strong style="color:var(--orange)">Belfast & Surrounding Areas</strong><br>
+        <span>Quality Roofing • Trusted Service • Built to Last</span>
+      </div>
+    </div>
+    <form id="quote-form">
+      <div class="form-grid">
+        <input required id="q-name" placeholder="Your name">
+        <input required id="q-phone" type="tel" placeholder="Phone number">
+        <input class="full" required id="q-email" type="email" placeholder="Email address">
+        <input class="full" id="q-address" placeholder="Property address">
+        <select class="full" id="q-service">
+          <option value="">What do you need?</option>
+          <option>Roof repair</option>
+          <option>New roof</option>
+          <option>Leak diagnosis</option>
+          <option>Skylight</option>
+          <option>Emergency call-out</option>
+          <option>Other</option>
+        </select>
+        <textarea class="full" id="q-details" placeholder="Tell us about the work"></textarea>
+        <div class="full"><button class="btn" type="submit" id="quote-submit-btn">Send Enquiry</button></div>
+        <p id="quote-message" class="slot-message full"></p>
+      </div>
+    </form>
+  </div>
+</section>
+</main>
+
+<div id="confirmation-overlay" class="overlay hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:white;border-radius:8px;padding:30px;max-width:400px;text-align:center;">
+    <h3 style="color:var(--navy);margin-bottom:12px;">Enquiry received!</h3>
+    <p style="color:var(--muted);font-size:14px;line-height:1.6;">Thanks — we've received your enquiry and will be in touch shortly to discuss your roof. Check your email for confirmation.</p>
+    <button class="btn" id="close-overlay" style="margin-top:18px;">Close</button>
+  </div>
+</div>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <h3>AZULINE <strong>ROOFING SOLUTIONS</strong></h3>
+      <p>Quality Roofing • Trusted Service • Built to Last</p>
+    </div>
+    <div>
+      <h3>Contact</h3>
+      <p>info@azulineroofing.co.uk</p>
+    </div>
+    <div>
+      <h3>Service Area</h3>
+      <p>Belfast & Surrounding Areas</p>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 Azuline Roofing Solutions. All rights reserved.</span>
+    <span>Site by YourBrand</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="quote.js"></script>
+</body>
+</html>
