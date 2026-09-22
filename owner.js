@@ -32,7 +32,8 @@ async function enterDashboard(session) {
   document.getElementById("signed-in-as").textContent = `Signed in as ${session.user.email}`;
 
   loadQuotes();
-  loadBlockedPeriods();
+  await loadBusyPeriods();
+  initCalendar();
 }
 
 async function handleLogin() {
@@ -114,6 +115,10 @@ async function removeQuote(id) {
 async function handleBlockPeriod() {
   const startInput = document.getElementById("busy-start");
   const endInput = document.getElementById("busy-end");
+  const nameInput = document.getElementById("busy-customer-name");
+  const addressInput = document.getElementById("busy-address");
+  const emailInput = document.getElementById("busy-email");
+  const phoneInput = document.getElementById("busy-phone");
   const reasonInput = document.getElementById("busy-reason");
   const message = document.getElementById("busy-message");
 
@@ -130,6 +135,10 @@ async function handleBlockPeriod() {
     business_id: BUSINESS_ID,
     start_date: startInput.value,
     end_date: endInput.value,
+    customer_name: nameInput.value.trim() || null,
+    property_address: addressInput.value.trim() || null,
+    customer_email: emailInput.value.trim() || null,
+    customer_phone: phoneInput.value.trim() || null,
     reason: reasonInput.value.trim() || null,
   });
 
@@ -142,47 +151,99 @@ async function handleBlockPeriod() {
   message.textContent = "Blocked.";
   startInput.value = "";
   endInput.value = "";
+  nameInput.value = "";
+  addressInput.value = "";
+  emailInput.value = "";
+  phoneInput.value = "";
   reasonInput.value = "";
-  loadBlockedPeriods();
+  await loadBusyPeriods();
+  renderCalendar();
 }
 
-async function loadBlockedPeriods() {
-  const listEl = document.getElementById("blocked-list");
-  listEl.innerHTML = "<p class=\"page-note\">Loading…</p>";
+const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-  const today = new Date();
-  const pad = n => String(n).padStart(2, "0");
-  const todayStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+let viewYear, viewMonth;
+let busyPeriods = [];
 
-  const { data, error } = await supabaseClient
+function pad2(n) { return String(n).padStart(2, "0"); }
+function toDateStr(y, m, d) { return `${y}-${pad2(m + 1)}-${pad2(d)}`; }
+
+function findPeriodForDate(dateStr) {
+  return busyPeriods.find(p => dateStr >= p.start_date && dateStr <= p.end_date);
+}
+
+async function loadBusyPeriods() {
+  const { data } = await supabaseClient
     .from("busy_periods")
     .select("*")
-    .eq("business_id", BUSINESS_ID)
-    .gte("end_date", todayStr)
-    .order("start_date", { ascending: true });
+    .eq("business_id", BUSINESS_ID);
+  busyPeriods = data || [];
+}
 
-  if (error || !data || data.length === 0) {
-    listEl.innerHTML = "<p class=\"page-note\">Nothing currently blocked.</p>";
-    return;
+function initCalendar() {
+  const today = new Date();
+  viewYear = today.getFullYear();
+  viewMonth = today.getMonth();
+  renderCalendar();
+  document.getElementById("prev-month").addEventListener("click", () => {
+    viewMonth--; if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+    renderCalendar();
+  });
+  document.getElementById("next-month").addEventListener("click", () => {
+    viewMonth++; if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+    renderCalendar();
+  });
+}
+
+function renderCalendar() {
+  const grid = document.getElementById("calendar-grid");
+  const label = document.getElementById("calendar-label");
+  label.textContent = `${MONTH_NAMES[viewMonth]} ${viewYear}`;
+
+  grid.innerHTML = "";
+  DAY_LABELS.forEach(d => {
+    const el = document.createElement("div");
+    el.className = "calendar-daylabel";
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+  for (let i = 0; i < firstDay; i++) {
+    const el = document.createElement("div");
+    el.className = "calendar-day day-other-month";
+    grid.appendChild(el);
   }
 
-  listEl.innerHTML = "";
-  data.forEach(row => {
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = toDateStr(viewYear, viewMonth, d);
+    const period = findPeriodForDate(dateStr);
     const el = document.createElement("div");
-    el.className = "appointment-row";
-    el.innerHTML = `
-      <div>
-        <strong>${formatDate(row.start_date)} – ${formatDate(row.end_date)}</strong><br>
-        ${row.reason || "No reason given"}
-      </div>
-      <button class="secondary-btn cancel-btn" data-id="${row.id}">Unblock</button>
-    `;
-    listEl.appendChild(el);
-  });
+    el.className = `calendar-day ${period ? "day-unavailable" : "day-available"}`;
+    el.textContent = d;
+    if (period) {
+      el.addEventListener("click", () => showDayDetail(period));
+    }
+    grid.appendChild(el);
+  }
+}
 
-  listEl.querySelectorAll(".cancel-btn").forEach(btn => {
-    btn.addEventListener("click", () => unblockPeriod(btn.dataset.id));
-  });
+function showDayDetail(period) {
+  const detail = document.getElementById("day-detail");
+  detail.classList.remove("hidden");
+  detail.innerHTML = `
+    <strong>${formatDate(period.start_date)} – ${formatDate(period.end_date)}</strong><br><br>
+    <strong>Customer:</strong> ${period.customer_name || "Not given"}<br>
+    <strong>Address:</strong> ${period.property_address || "Not given"}<br>
+    <strong>Email:</strong> ${period.customer_email || "Not given"}<br>
+    <strong>Phone:</strong> ${period.customer_phone || "Not given"}<br>
+    <strong>Job details:</strong> ${period.reason || "Not given"}<br><br>
+    <button class="secondary-btn cancel-btn" id="unblock-current-btn">Unblock This Period</button>
+  `;
+  document.getElementById("unblock-current-btn").addEventListener("click", () => unblockPeriod(period.id));
 }
 
 async function unblockPeriod(id) {
@@ -191,7 +252,9 @@ async function unblockPeriod(id) {
     alert("Couldn't remove — please try again.");
     return;
   }
-  loadBlockedPeriods();
+  document.getElementById("day-detail").classList.add("hidden");
+  await loadBusyPeriods();
+  renderCalendar();
 }
 
 document.getElementById("login-btn").addEventListener("click", handleLogin);

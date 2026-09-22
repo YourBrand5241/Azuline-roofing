@@ -49,20 +49,39 @@
 
     <section class="owner-section">
       <h3 style="color:var(--navy);margin-bottom:14px">Block Out Availability</h3>
-      <p style="color:var(--muted);font-size:13px">Mark a date range as booked — this shows on the public Availability page.</p>
+      <p style="color:var(--muted);font-size:13px">Record a job's dates and details — this blocks the period on the public calendar, and lets you see the job details by clicking that day here.</p>
       <label for="busy-start">Start date</label>
       <input type="date" id="busy-start">
       <label for="busy-end">End date</label>
       <input type="date" id="busy-end">
-      <label for="busy-reason">Reason (optional, shown publicly)</label>
-      <input type="text" id="busy-reason" placeholder="e.g. Full roof job in progress">
+      <label for="busy-customer-name">Customer name</label>
+      <input type="text" id="busy-customer-name" placeholder="Customer name">
+      <label for="busy-address">Property address</label>
+      <input type="text" id="busy-address" placeholder="Job address">
+      <label for="busy-email">Customer email</label>
+      <input type="email" id="busy-email" placeholder="Customer email">
+      <label for="busy-phone">Customer phone</label>
+      <input type="tel" id="busy-phone" placeholder="Customer phone">
+      <label for="busy-reason">Job details / reason</label>
+      <input type="text" id="busy-reason" placeholder="e.g. Full roof replacement">
       <button id="busy-btn" class="btn" style="margin-top:16px">Block This Period</button>
       <p id="busy-message" class="slot-message"></p>
     </section>
 
     <section class="owner-section">
-      <h3 style="color:var(--navy);margin-bottom:14px">Currently Blocked</h3>
-      <div id="blocked-list"></div>
+      <h3 style="color:var(--navy);margin-bottom:14px">Availability Calendar</h3>
+      <p style="color:var(--muted);font-size:13px">Click a red day to see the job booked for that date.</p>
+      <div class="calendar-header">
+        <button class="calendar-nav-btn" id="prev-month">← Prev</button>
+        <h3 id="calendar-label"></h3>
+        <button class="calendar-nav-btn" id="next-month">Next →</button>
+      </div>
+      <div class="calendar-grid" id="calendar-grid"></div>
+      <div class="calendar-legend">
+        <span><span class="legend-swatch legend-available"></span>Available</span>
+        <span><span class="legend-swatch legend-unavailable"></span>Booked</span>
+      </div>
+      <div id="day-detail" class="owner-section hidden" style="margin-top:20px;background:#f5f6f7"></div>
     </section>
 
   </div>

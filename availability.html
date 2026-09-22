@@ -39,8 +39,17 @@
       ⓘ Availability shown below is a general guide only. Actual start dates depend on the size and duration of your specific job — a small repair can often be scheduled quickly, while a full roof system may need to be booked further ahead. Request a quote and we'll confirm a realistic timeframe for your job.
     </div>
 
-    <div id="busy-list" class="busy-list">
-      <p class="page-note">Loading availability…</p>
+    <div class="calendar-header">
+      <button class="calendar-nav-btn" id="prev-month">← Prev</button>
+      <h3 id="calendar-label"></h3>
+      <button class="calendar-nav-btn" id="next-month">Next →</button>
+    </div>
+
+    <div class="calendar-grid" id="calendar-grid"></div>
+
+    <div class="calendar-legend">
+      <span><span class="legend-swatch legend-available"></span>Available</span>
+      <span><span class="legend-swatch legend-unavailable"></span>Unavailable</span>
     </div>
 
     <div style="text-align:center;margin-top:36px">
