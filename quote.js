@@ -7,6 +7,7 @@ const BUSINESS_NAME = "Azuline Roofing Solutions";
 const EMAILJS_SERVICE_ID = "service_zzjha2e";
 const EMAILJS_TEMPLATE_ID = "template_khedkjr";
 const EMAILJS_PUBLIC_KEY = "fs6q7ZsiYGhRUtas5";
+const OWNER_EMAIL = "sales@azuline.co.uk";
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 if (window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY);
@@ -57,6 +58,14 @@ document.getElementById("quote-form").addEventListener("submit", async (e) => {
       email_subject: `Enquiry received — ${BUSINESS_NAME}`,
       email_body: `Thanks for getting in touch with ${BUSINESS_NAME}.\n\nWe've received your enquiry:\n${service ? service : "General enquiry"}\n${details ? details : ""}\n\nWe'll be in touch shortly to discuss your roof.`,
     }).catch(err => console.error("Confirmation email failed to send:", err));
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email: OWNER_EMAIL,
+      to_name: BUSINESS_NAME,
+      business_name: BUSINESS_NAME,
+      email_subject: `New quote request — ${service || "General enquiry"}`,
+      email_body: `New quote request received.\n\nName: ${name}\nPhone: ${phone}\nEmail: ${email}\nAddress: ${address || "Not given"}\nService: ${service || "Not specified"}\nDetails: ${details || "None given"}`,
+    }).catch(err => console.error("Owner notification email failed to send:", err));
   }
 
   document.getElementById("confirmation-overlay").classList.remove("hidden");
