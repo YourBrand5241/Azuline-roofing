@@ -1,8 +1,14 @@
 const SUPABASE_URL = "https://jywhymtctdnvwwvxtcpw.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8-VfhsJiclZMwjjkZ-k18A_gLYKbaGR";
 const BUSINESS_ID = "azuline-roofing";
+const BUSINESS_NAME = "Azuline Roofing Solutions";
+
+const EMAILJS_SERVICE_ID = "service_zzjha2e";
+const EMAILJS_TEMPLATE_ID = "template_khedkjr";
+const EMAILJS_PUBLIC_KEY = "fs6q7ZsiYGhRUtas5";
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+if (window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY);
 
 function formatDate(dateStr) {
   const d = new Date(dateStr + "T00:00:00");
@@ -146,6 +152,17 @@ async function handleBlockPeriod() {
     message.textContent = "Something went wrong — please try again.";
     console.error(error);
     return;
+  }
+
+  const customerEmail = emailInput.value.trim();
+  if (customerEmail && window.emailjs) {
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email: customerEmail,
+      to_name: nameInput.value.trim() || "there",
+      business_name: BUSINESS_NAME,
+      email_subject: `Your job is booked in — ${BUSINESS_NAME}`,
+      email_body: `Hi ${nameInput.value.trim() || "there"},\n\nYour job with ${BUSINESS_NAME} is booked in.\n\nDates: ${startInput.value} to ${endInput.value}\n${addressInput.value.trim() ? `Address: ${addressInput.value.trim()}\n` : ""}${reasonInput.value.trim() ? `Job: ${reasonInput.value.trim()}\n` : ""}\nWe'll see you then. If anything needs to change, just get in touch.`,
+    }).catch(err => console.error("Job confirmation email failed to send:", err));
   }
 
   message.textContent = "Blocked.";
