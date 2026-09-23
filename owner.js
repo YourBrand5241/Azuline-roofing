@@ -1,15 +1,11 @@
 const SUPABASE_URL = "https://jywhymtctdnvwwvxtcpw.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8-VfhsJiclZMwjjkZ-k18A_gLYKbaGR";
-const BUSINESS_ID = "a1-plastering";
-const BUSINESS_NAME = "A1 Plastering";
+const BUSINESS_ID = "azuline-roofing";
+const BUSINESS_NAME = "Azuline Roofing Solutions";
 
-const EMAILJS_SERVICE_ID = "service_zzjha2e";
+const EMAILJS_SERVICE_ID = "service_yj4mxr6";
 const EMAILJS_TEMPLATE_ID = "template_khedkjr";
 const EMAILJS_PUBLIC_KEY = "fs6q7ZsiYGhRUtas5";
-
-// Swap this for the real link once A1 Plastering's Google Business Profile
-// is set up and verified — see "Ask for reviews" on the profile.
-const GOOGLE_REVIEW_LINK = "PASTE_YOUR_GOOGLE_REVIEW_LINK_HERE";
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 if (window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY);
@@ -32,7 +28,7 @@ async function enterDashboard(session) {
     .eq("owner_user_id", session.user.id);
 
   if (error || !ownerRows || ownerRows.length === 0) {
-    document.getElementById("login-message").textContent = "This account isn't linked to A1 Plastering.";
+    document.getElementById("login-message").textContent = "This account isn't linked to Azuline Roofing.";
     await supabaseClient.auth.signOut();
     return;
   }
@@ -262,41 +258,9 @@ function showDayDetail(period) {
     <strong>Email:</strong> ${period.customer_email || "Not given"}<br>
     <strong>Phone:</strong> ${period.customer_phone || "Not given"}<br>
     <strong>Job details:</strong> ${period.reason || "Not given"}<br><br>
-    <button class="btn" id="complete-current-btn" style="margin-bottom:8px">Mark as Completed &amp; Request Review</button><br>
-    <button class="secondary-btn cancel-btn" id="unblock-current-btn">Unblock This Period (no review request)</button>
-    <p id="complete-message" class="slot-message"></p>
+    <button class="secondary-btn cancel-btn" id="unblock-current-btn">Unblock This Period</button>
   `;
   document.getElementById("unblock-current-btn").addEventListener("click", () => unblockPeriod(period.id));
-  document.getElementById("complete-current-btn").addEventListener("click", () => markCompletedAndRequestReview(period));
-}
-
-async function markCompletedAndRequestReview(period) {
-  const message = document.getElementById("complete-message");
-
-  if (period.customer_email && window.emailjs) {
-    message.textContent = "Sending review request...";
-    try {
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-        to_email: period.customer_email,
-        to_name: period.customer_name || "there",
-        business_name: BUSINESS_NAME,
-        email_subject: `How did we do? — ${BUSINESS_NAME}`,
-        email_body: `Hi ${period.customer_name || "there"},\n\nThanks for choosing ${BUSINESS_NAME} for your recent job${period.reason ? ` (${period.reason})` : ""}. We hope you're happy with the results!\n\nIf you have a moment, we'd really appreciate a quick Google review — it makes a huge difference for a small business like ours:\n${GOOGLE_REVIEW_LINK}\n\nThank you for your business!`,
-      });
-    } catch (err) {
-      console.error("Review request email failed to send:", err);
-    }
-  }
-
-  const { error } = await supabaseClient.from("busy_periods").delete().eq("id", period.id);
-  if (error) {
-    message.textContent = "Marked, but couldn't clear the calendar — please try again.";
-    return;
-  }
-
-  document.getElementById("day-detail").classList.add("hidden");
-  await loadBusyPeriods();
-  renderCalendar();
 }
 
 async function unblockPeriod(id) {

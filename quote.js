@@ -1,14 +1,13 @@
 // ==== CONFIG ====
 const SUPABASE_URL = "https://jywhymtctdnvwwvxtcpw.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8-VfhsJiclZMwjjkZ-k18A_gLYKbaGR";
-const BUSINESS_ID = "a1-plastering";
-const BUSINESS_NAME = "A1 Plastering";
+const BUSINESS_ID = "azuline-roofing";
+const BUSINESS_NAME = "Azuline Roofing Solutions";
 
-const EMAILJS_SERVICE_ID = "service_zzjha2e";
+const EMAILJS_SERVICE_ID = "service_yj4mxr6";
 const EMAILJS_TEMPLATE_ID = "template_khedkjr";
 const EMAILJS_PUBLIC_KEY = "fs6q7ZsiYGhRUtas5";
-// Swap this for A1's own domain email once one's set up (same as sales@azuline.co.uk was for Azuline)
-const OWNER_EMAIL = "yourbrand5241+A1@gmail.com";
+const OWNER_EMAIL = "sales@azuline.co.uk";
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 if (window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY);
@@ -57,7 +56,7 @@ document.getElementById("quote-form").addEventListener("submit", async (e) => {
       to_name: name,
       business_name: BUSINESS_NAME,
       email_subject: `Enquiry received — ${BUSINESS_NAME}`,
-      email_body: `Thanks for getting in touch with ${BUSINESS_NAME}.\n\nWe've received your enquiry:\n${service ? service : "General enquiry"}\n${details ? details : ""}\n\nWe'll be in touch shortly to discuss your job.`,
+      email_body: `Thanks for getting in touch with ${BUSINESS_NAME}.\n\nWe've received your enquiry:\n${service ? service : "General enquiry"}\n${details ? details : ""}\n\nWe'll be in touch shortly to discuss your roof.`,
     }).catch(err => console.error("Confirmation email failed to send:", err));
 
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
