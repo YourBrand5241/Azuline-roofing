@@ -3,7 +3,7 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8-VfhsJiclZMwjjkZ-k18A_gLYKbaGR
 const BUSINESS_ID = "azuline-roofing";
 const BUSINESS_NAME = "Azuline Roofing Solutions";
 
-const EMAILJS_SERVICE_ID = "service_zzjha2e";
+const EMAILJS_SERVICE_ID = "service_yj4mxr6";
 const EMAILJS_TEMPLATE_ID = "template_khedkjr";
 const EMAILJS_PUBLIC_KEY = "fs6q7ZsiYGhRUtas5";
 
