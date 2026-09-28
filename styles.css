@@ -105,7 +105,7 @@ button{border:0;cursor:pointer;width:100%;font:inherit}
 .owner-portal-page label{font-size:13px;color:var(--muted);display:block;margin:12px 0 6px}
 .owner-portal-page input{padding:10px;border-radius:4px;border:1px solid #d9dde0;font-size:14px;width:100%}
 .portal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.secondary-btn{background:none;border:1px solid #d9dde0;color:var(--text);border-radius:4px;padding:8px 16px;font-size:13px;cursor:pointer}
+.secondary-btn{background:none;border:1px solid #d9dde0;color:var(--text);border-radius:4px;padding:8px 16px;font-size:13px;cursor:pointer;margin:4px 8px 4px 0}
 .appointment-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;border:1px solid #e7e7e7;border-radius:6px;font-size:13px;line-height:1.6;margin-bottom:10px}
 .cancel-btn{border-color:#e8b4b4;color:#a12626}
 .slot-message{font-size:13px;color:var(--orange);min-height:18px;margin-top:6px}
@@ -118,11 +118,12 @@ button{border:0;cursor:pointer;width:100%;font:inherit}
 .calendar-nav-btn:hover{background:var(--orange)}
 .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;max-width:600px;margin:0 auto}
 .calendar-daylabel{text-align:center;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;padding-bottom:6px}
-.calendar-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:13px;font-weight:700;cursor:default}
+.calendar-day{position:relative;aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:13px;font-weight:700;cursor:default}
 .calendar-day.day-available{background:#e3f7ea;color:#1a7a45}
 .calendar-day.day-unavailable{background:#fbdede;color:#a12626;cursor:pointer}
 .calendar-day.day-unavailable:hover{background:#f5c2c2}
 .calendar-day.day-other-month{background:transparent;color:#ccc;cursor:default}
+.day-job-count{position:absolute;top:2px;right:2px;background:#a12626;color:#fff;font-size:10px;font-weight:800;line-height:1;padding:2px 5px;border-radius:8px}
 .calendar-legend{display:flex;justify-content:center;gap:24px;margin-top:16px;font-size:13px}
 .legend-swatch{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:6px;vertical-align:middle}
 .legend-available{background:#e3f7ea}
@@ -131,6 +132,9 @@ button{border:0;cursor:pointer;width:100%;font:inherit}
 .day-detail-panel h4{color:var(--navy);margin-bottom:10px}
 .day-detail-panel p{font-size:14px;margin:4px 0;color:var(--text)}
 .day-detail-panel .muted{color:var(--muted);font-size:13px}
+.job-entry{margin-bottom:6px}
+.job-entry-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:8px}
+.job-divider{border:none;border-top:1px solid #e7e7e7;margin:18px 0}
 
 .hidden{display:none !important;}
 

@@ -161,7 +161,7 @@ async function handleBlockPeriod() {
       to_name: nameInput.value.trim() || "there",
       business_name: BUSINESS_NAME,
       email_subject: `Your job is booked in — ${BUSINESS_NAME}`,
-      email_body: `Hi ${nameInput.value.trim() || "there"},\n\nYour job with ${BUSINESS_NAME} is booked in.\n\nDates: ${startInput.value} to ${endInput.value}\n${addressInput.value.trim() ? `Address: ${addressInput.value.trim()}\n` : ""}${reasonInput.value.trim() ? `Job: ${reasonInput.value.trim()}\n` : ""}\nWe'll see you then. If anything needs to change, just get in touch.`,
+      email_body: `Your job with ${BUSINESS_NAME} is booked in.\n\nDates: ${startInput.value} to ${endInput.value}\n${addressInput.value.trim() ? `Address: ${addressInput.value.trim()}\n` : ""}${reasonInput.value.trim() ? `Job: ${reasonInput.value.trim()}\n` : ""}\nWe'll see you then. If anything needs to change, just get in touch.`,
     }).catch(err => console.error("Job confirmation email failed to send:", err));
   }
 
@@ -175,6 +175,7 @@ async function handleBlockPeriod() {
   reasonInput.value = "";
   await loadBusyPeriods();
   renderCalendar();
+  renderDayDetail();
 }
 
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -182,12 +183,15 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "Ju
 
 let viewYear, viewMonth;
 let busyPeriods = [];
+let currentDetailDate = null;
 
 function pad2(n) { return String(n).padStart(2, "0"); }
 function toDateStr(y, m, d) { return `${y}-${pad2(m + 1)}-${pad2(d)}`; }
 
-function findPeriodForDate(dateStr) {
-  return busyPeriods.find(p => dateStr >= p.start_date && dateStr <= p.end_date);
+// Returns EVERY job that covers this date, not just the first one —
+// a single day can have multiple separate jobs booked in.
+function findPeriodsForDate(dateStr) {
+  return busyPeriods.filter(p => dateStr >= p.start_date && dateStr <= p.end_date);
 }
 
 async function loadBusyPeriods() {
@@ -237,30 +241,65 @@ function renderCalendar() {
 
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = toDateStr(viewYear, viewMonth, d);
-    const period = findPeriodForDate(dateStr);
+    const periods = findPeriodsForDate(dateStr);
     const el = document.createElement("div");
-    el.className = `calendar-day ${period ? "day-unavailable" : "day-available"}`;
+    el.className = `calendar-day ${periods.length ? "day-unavailable" : "day-available"}`;
     el.textContent = d;
-    if (period) {
-      el.addEventListener("click", () => showDayDetail(period));
+    if (periods.length > 1) {
+      const badge = document.createElement("span");
+      badge.className = "day-job-count";
+      badge.textContent = periods.length;
+      el.appendChild(badge);
+    }
+    if (periods.length) {
+      el.addEventListener("click", () => showDayDetail(dateStr));
     }
     grid.appendChild(el);
   }
 }
 
-function showDayDetail(period) {
+function showDayDetail(dateStr) {
+  currentDetailDate = dateStr;
+  renderDayDetail();
+}
+
+// Re-draws the detail panel for whichever date is currently open, straight
+// from busyPeriods — called after loading, and after any complete/unblock
+// action, so the panel always reflects exactly what's left for that day.
+function renderDayDetail() {
   const detail = document.getElementById("day-detail");
+  if (!currentDetailDate) {
+    detail.classList.add("hidden");
+    return;
+  }
+
+  const periods = findPeriodsForDate(currentDetailDate);
+  if (periods.length === 0) {
+    detail.classList.add("hidden");
+    currentDetailDate = null;
+    return;
+  }
+
   detail.classList.remove("hidden");
-  detail.innerHTML = `
-    <strong>${formatDate(period.start_date)} – ${formatDate(period.end_date)}</strong><br><br>
-    <strong>Customer:</strong> ${period.customer_name || "Not given"}<br>
-    <strong>Address:</strong> ${period.property_address || "Not given"}<br>
-    <strong>Email:</strong> ${period.customer_email || "Not given"}<br>
-    <strong>Phone:</strong> ${period.customer_phone || "Not given"}<br>
-    <strong>Job details:</strong> ${period.reason || "Not given"}<br><br>
-    <button class="secondary-btn cancel-btn" id="unblock-current-btn">Unblock This Period</button>
-  `;
-  document.getElementById("unblock-current-btn").addEventListener("click", () => unblockPeriod(period.id));
+  detail.innerHTML = periods.map((period, i) => `
+    <div class="job-entry">
+      ${periods.length > 1 ? `<div class="job-entry-label">Job ${i + 1} of ${periods.length}</div>` : ""}
+      <p><strong>${formatDate(period.start_date)} – ${formatDate(period.end_date)}</strong></p>
+      <p><strong>Customer:</strong> ${period.customer_name || "Not given"}</p>
+      <p><strong>Address:</strong> ${period.property_address || "Not given"}</p>
+      <p><strong>Email:</strong> ${period.customer_email || "Not given"}</p>
+      <p><strong>Phone:</strong> ${period.customer_phone || "Not given"}</p>
+      <p><strong>Job details:</strong> ${period.reason || "Not given"}</p>
+      <button class="secondary-btn cancel-btn" data-action="unblock" data-id="${period.id}">Unblock This Period</button>
+    </div>
+    ${i < periods.length - 1 ? `<hr class="job-divider">` : ""}
+  `).join("");
+
+  detail.querySelectorAll("button[data-action]").forEach(btn => {
+    const period = periods.find(p => String(p.id) === String(btn.dataset.id));
+    if (!period) return;
+    btn.addEventListener("click", () => unblockPeriod(period.id));
+  });
 }
 
 async function unblockPeriod(id) {
@@ -269,9 +308,9 @@ async function unblockPeriod(id) {
     alert("Couldn't remove — please try again.");
     return;
   }
-  document.getElementById("day-detail").classList.add("hidden");
   await loadBusyPeriods();
   renderCalendar();
+  renderDayDetail();
 }
 
 document.getElementById("login-btn").addEventListener("click", handleLogin);
