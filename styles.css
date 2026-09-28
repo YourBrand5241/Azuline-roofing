@@ -108,6 +108,7 @@ button{border:0;cursor:pointer;width:100%;font:inherit}
 .secondary-btn{background:none;border:1px solid #d9dde0;color:var(--text);border-radius:4px;padding:8px 16px;font-size:13px;cursor:pointer;margin:4px 8px 4px 0}
 .appointment-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;border:1px solid #e7e7e7;border-radius:6px;font-size:13px;line-height:1.6;margin-bottom:10px}
 .cancel-btn{border-color:#e8b4b4;color:#a12626}
+.complete-btn{border-color:#8fcf9f;color:#1a7a45}
 .slot-message{font-size:13px;color:var(--orange);min-height:18px;margin-top:6px}
 .page-note{text-align:center;color:var(--muted);font-size:12px;font-style:italic;margin-top:20px}
 

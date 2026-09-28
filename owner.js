@@ -290,6 +290,7 @@ function renderDayDetail() {
       <p><strong>Email:</strong> ${period.customer_email || "Not given"}</p>
       <p><strong>Phone:</strong> ${period.customer_phone || "Not given"}</p>
       <p><strong>Job details:</strong> ${period.reason || "Not given"}</p>
+      ${period.customer_email ? `<button class="secondary-btn complete-btn" data-action="complete" data-id="${period.id}">Mark as Completed</button>` : ""}
       <button class="secondary-btn cancel-btn" data-action="unblock" data-id="${period.id}">Unblock This Period</button>
     </div>
     ${i < periods.length - 1 ? `<hr class="job-divider">` : ""}
@@ -298,8 +299,42 @@ function renderDayDetail() {
   detail.querySelectorAll("button[data-action]").forEach(btn => {
     const period = periods.find(p => String(p.id) === String(btn.dataset.id));
     if (!period) return;
-    btn.addEventListener("click", () => unblockPeriod(period.id));
+    if (btn.dataset.action === "complete") {
+      btn.addEventListener("click", () => markCompleted(period));
+    } else {
+      btn.addEventListener("click", () => unblockPeriod(period.id));
+    }
   });
+}
+
+// Only the customer on THIS specific job gets emailed — scoped to a single
+// period.id, never the whole day. No review link/mention in this email.
+async function markCompleted(period) {
+  if (!confirm(`Mark ${period.customer_name || "this job"}'s job as completed and let them know?`)) return;
+
+  if (period.customer_email && window.emailjs) {
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email: period.customer_email,
+        to_name: period.customer_name || "there",
+        business_name: BUSINESS_NAME,
+        email_subject: `Your job is complete — ${BUSINESS_NAME}`,
+        email_body: `Your job with ${BUSINESS_NAME} has been marked as complete.\n\nThanks for choosing us — if you need anything else, just get in touch.`,
+      });
+    } catch (err) {
+      console.error("Completion email failed to send:", err);
+      alert("Job will be marked complete, but the email failed to send.");
+    }
+  }
+
+  const { error } = await supabaseClient.from("busy_periods").delete().eq("id", period.id);
+  if (error) {
+    alert("Couldn't update — please try again.");
+    return;
+  }
+  await loadBusyPeriods();
+  renderCalendar();
+  renderDayDetail();
 }
 
 async function unblockPeriod(id) {
